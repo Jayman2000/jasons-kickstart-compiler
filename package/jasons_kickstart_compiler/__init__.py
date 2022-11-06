@@ -31,7 +31,7 @@ Final = typing.__dict__.get("Final")
 if Final is None:
     Final = typing.Union
 
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, Template
 
 
 def main():
@@ -55,7 +55,12 @@ def main():
             metavar="FILE"
     )
     ARGUMENTS : Final[Namespace] = ARGUMENT_PARSER.parse_args()
+    INPUT_FILE_PATH : Final[Path] = ARGUMENTS.file
 
     JENV : Final[Environment] = Environment(
-            loader=FileSystemLoader(ARGUMENTS.file.parent)
+            loader=FileSystemLoader(INPUT_FILE_PATH.parent)
     )
+    TEMPLATE : Final[Template] = JENV.get_template(INPUT_FILE_PATH.name)
+    OUTPUT_PATH : Final[Path] = Path("ks.cfg")
+    with OUTPUT_PATH.open('w') as output_file:
+        output_file.write(TEMPLATE.render())
