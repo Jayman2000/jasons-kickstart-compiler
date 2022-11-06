@@ -34,7 +34,7 @@ if Final is None:
 from jinja2 import Environment, FileSystemLoader, Template
 
 
-def get_field(name : str, prompt : typing.Optional[str] = None) -> None:
+def get_field(name : str, prompt : typing.Optional[str] = None) -> str:
     if prompt is None:
         prompt = f"{name}: "
     return input(prompt)
