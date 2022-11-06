@@ -1,7 +1,6 @@
 from argparse import ArgumentParser, Namespace, RawDescriptionHelpFormatter
 from pathlib import Path
 import typing
-
 # typing.Final was added in Python 3.8 [1], but Python 3.7 is still
 # supported [2]. I want this program to work on all currently supported
 # version of Python (RHEL users are likely a few versions behind).
@@ -32,6 +31,8 @@ Final = typing.__dict__.get("Final")
 if Final is None:
     Final = typing.Union
 
+from jinja2 import Environment, FileSystemLoader
+
 
 def main():
     DESCRIPTION : Final[str] = \
@@ -54,3 +55,7 @@ def main():
             metavar="FILE"
     )
     ARGUMENTS : Final[Namespace] = ARGUMENT_PARSER.parse_args()
+
+    JENV : Final[Environment] = Environment(
+            loader=FileSystemLoader(ARGUMENTS.file.parent)
+    )

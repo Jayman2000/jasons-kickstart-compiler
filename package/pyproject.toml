@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "jasons-kickstart-compiler"
 version = "0.0.0"
 requires-python = ">=3.7"
+dependencies = ["Jinja2"]
 
 [project.urls]
 Homepage = "https://jasonyundt.website/gitweb?p=jasons-kickstart-compiler;a=summary"
