@@ -34,6 +34,12 @@ if Final is None:
 from jinja2 import Environment, FileSystemLoader, Template
 
 
+def get_field(name : str, prompt : typing.Optional[str] = None) -> None:
+    if prompt is None:
+        prompt = f"{name}: "
+    return input(prompt)
+
+
 def main():
     DESCRIPTION : Final[str] = \
             "Turn a set of files into a standalone ks.cfg. " \
@@ -60,6 +66,9 @@ def main():
     JENV : Final[Environment] = Environment(
             loader=FileSystemLoader(INPUT_FILE_PATH.parent)
     )
+    JENV.globals = {
+            'get_field' : get_field
+    }
     TEMPLATE : Final[Template] = JENV.get_template(INPUT_FILE_PATH.name)
     OUTPUT_PATH : Final[Path] = Path("ks.cfg")
     with OUTPUT_PATH.open('w') as output_file:
