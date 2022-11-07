@@ -2,7 +2,7 @@ from base64 import standard_b64encode
 from crypt import crypt
 from getpass import getpass
 from io import BytesIO
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from shlex import quote as shell_quote
 from sys import stderr
 from tarfile import TarInfo, open as open_tar
@@ -11,6 +11,7 @@ from typing import Optional
 from typing_extensions import Final
 
 
+ENTRY_POINT_ARC_PATH : Final[PurePosixPath] = PurePosixPath(".", "entry-point")
 ENTRY_POINT_MISSING : Final[str] = \
         "ERROR: A self extracting post script lacks a file named " \
         + "entry-point. The self extracting post script won’t " \
@@ -66,16 +67,18 @@ def self_extracting_post_script(path : Path) -> str:
     # to self_extracting_post_script() multiple times at once.
     encountered_entry_point : bool = False
     def filter(tar_info : TarInfo) -> TarInfo:
-        if tar_info.name == "entry-point":
-            nonlocal encountered_entry_point
-            encountered_entry_point = True
-            if tar_info.mode & OWNER_EXECUTABLE_BIT == 0:
-                print(
-                        "A self-extracting post script’s entry-point’s "
-                        + "owner’s executable bit wasn’t set. "
-                        + "Automatically setting it…"
-                )
-                tar_info.mode |= OWNER_EXECUTABLE_BIT
+        nonlocal encountered_entry_point
+        if not encountered_entry_point:
+            ARC_PATH : Final[PurePosixPath] = PurePosixPath(tar_info.name)
+            if ARC_PATH == ENTRY_POINT_ARC_PATH:
+                encountered_entry_point = True
+                if tar_info.mode & OWNER_EXECUTABLE_BIT == 0:
+                    print(
+                            "A self-extracting post script’s entry-point’s "
+                            + "owner’s executable bit wasn’t set. "
+                            + "Automatically setting it…"
+                    )
+                    tar_info.mode |= OWNER_EXECUTABLE_BIT
         return tar_info
 
     # Credit goes to decaf (https://stackoverflow.com/users/1159217/decaf)
@@ -84,7 +87,7 @@ def self_extracting_post_script(path : Path) -> str:
     with open_tar(fileobj=tar_data, mode='w') as tar:
         tar.add(
                 path,
-                arcname=Path("/", path.name),
+                arcname=PurePosixPath(".") if path.is_dir() else PurePosixPath(".", path.name),
                 recursive=True,
                 filter=filter
         )
