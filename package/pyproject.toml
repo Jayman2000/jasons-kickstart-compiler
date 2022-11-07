@@ -9,7 +9,10 @@ requires-python = ">=3.7,<4"
 # I’m not going to constrain Jinja2’s version. I expect that if there
 # are significant backwards incompatible changes, then a new package
 # (Jinja3) will be created.
-dependencies = ["Jinja2"]
+dependencies = [
+	"Jinja2",
+	"typing-extensions>=4.4.0,<5"
+]
 
 [project.urls]
 Homepage = "https://jasonyundt.website/gitweb?p=jasons-kickstart-compiler;a=summary"

@@ -7,38 +7,10 @@ from pathlib import Path
 from shlex import quote as shell_quote
 from sys import stderr
 from tarfile import TarInfo, open as open_tar
-import typing
-# typing.Final was added in Python 3.8 [1], but Python 3.7 is still
-# supported [2]. I want this program to work on all currently supported
-# version of Python (RHEL users are likely a few versions behind).
-#
-# Luckily, Union[x] == x, so we can use Union when Final isn’t
-# available.
-#
-# Unfortunately, mypy running on Python 3.7 doesn’t like the following
-# code:
-#
-#   if version_info.major <= 3 and version_info.minor <= 7:
-#       from typing import Union as Final
-#   else:
-#       from typing import Final
-#
-# Mypy running on Python 3.7 complains that typing.Final doesn’t exist.
-# I tried using a try…except ImportError, but mypy running on Python 3.7
-# didn’t like that either. My work around is to use
-# typing.__dict__.get().
-#
-# Unfortunately, mypy doesn’t like
-# typing.__dict__.get("Final", default=typing.Union). That’s probably a
-# bug with mypy, but I can use an if statement to work around it easily.
-#
-# [1]: <https://docs.python.org/3/library/typing.html?highlight=3.8#typing.Final>
-# [2]: <https://web.archive.org/web/20221106151109/https://devguide.python.org/versions/#supported-versions>
-Final = typing.__dict__.get("Final")
-if Final is None:
-    Final = typing.Union
+from typing import Optional
 
 from jinja2 import Environment, FileSystemLoader, Template
+from typing_extensions import Final
 
 
 ENTRY_POINT_MISSING : Final[str] = \
@@ -50,7 +22,7 @@ OWNER_EXECUTABLE_BIT : int = 0o0100
 
 def get_field(
         name : str,
-        prompt : typing.Optional[str] = None,
+        prompt : Optional[str] = None,
         is_password : bool = False,
         encrypt_password : bool = True
 ) -> str:
