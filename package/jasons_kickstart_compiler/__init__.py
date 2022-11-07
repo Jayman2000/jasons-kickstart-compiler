@@ -1,5 +1,6 @@
 from argparse import ArgumentParser, Namespace, RawDescriptionHelpFormatter
 from pathlib import Path
+from sys import stderr
 
 from jinja2 import Environment, FileSystemLoader, Template
 from typing_extensions import Final
@@ -42,3 +43,20 @@ def main() -> None:
     OUTPUT_PATH : Final[Path] = Path("ks.cfg")
     with OUTPUT_PATH.open('w') as output_file:
         output_file.write(TEMPLATE.render())
+
+
+    if (
+            jinja_globals.self_extracting_post_script_called
+            and not jinja_globals.dependencies_for_self_extracting_post_script_called
+    ):
+        print(
+                "ERROR: It looks like you included a self-extracting "
+                + "post script in your kickstart file but didn’t ensure"
+                + " that all of its dependencies will be present on the"
+                + " target system. Please put\n\n"
+                + "\t{{ jasons_kickstart_compiler.dependencies_for_self_extracting_post_script() }}"
+                + "\n\nsomewhere in the packages section of "
+                + str(INPUT_FILE_PATH)
+                + ".",
+                file=stderr
+        )

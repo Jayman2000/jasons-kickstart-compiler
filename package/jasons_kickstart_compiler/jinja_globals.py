@@ -16,6 +16,8 @@ ENTRY_POINT_MISSING : Final[str] = \
         + "entry-point. The self extracting post script won’t " \
         + "do anything."
 OWNER_EXECUTABLE_BIT : int = 0o0100
+dependencies_for_self_extracting_post_script_called : bool = False
+self_extracting_post_script_called : bool = False
 input_file_parent : Path = Path()
 
 
@@ -40,7 +42,19 @@ def get_field(
             return input(prompt)
 
 
+def dependencies_for_self_extracting_post_script() -> str:
+    global dependencies_for_self_extracting_post_script_called
+    dependencies_for_self_extracting_post_script_called = True
+    return """
+bash
+coreutils
+tar
+"""
+
+
 def self_extracting_post_script(path : Path) -> str:
+    global self_extracting_post_script_called
+    self_extracting_post_script_called = True
     if not path.is_absolute():
         path = Path(input_file_parent, path)
     # It’s kind of weird to declare a function inside of another
