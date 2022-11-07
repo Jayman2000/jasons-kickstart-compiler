@@ -104,7 +104,7 @@ rm -rf "$temporary_directory"
         return f"# {ERROR_MESSAGE}"
 
 
-def main():
+def main() -> None:
     DESCRIPTION : Final[str] = \
             "Turn a set of files into a standalone ks.cfg. " \
             + "<https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/performing_an_advanced_rhel_9_installation/installation-methods-advanced_installing-rhel-as-an-experienced-user>"
