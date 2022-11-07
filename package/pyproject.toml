@@ -6,6 +6,9 @@ build-backend = "setuptools.build_meta"
 name = "jasons-kickstart-compiler"
 version = "0.0.0"
 requires-python = ">=3.7,<4"
+# I’m not going to constrain Jinja2’s version. I expect that if there
+# are significant backwards incompatible changes, then a new package
+# (Jinja3) will be created.
 dependencies = ["Jinja2"]
 
 [project.urls]
