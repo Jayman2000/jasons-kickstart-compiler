@@ -1,4 +1,6 @@
 from argparse import ArgumentParser, Namespace, RawDescriptionHelpFormatter
+from crypt import crypt
+from getpass import getpass
 from pathlib import Path
 import typing
 # typing.Final was added in Python 3.8 [1], but Python 3.7 is still
@@ -34,10 +36,25 @@ if Final is None:
 from jinja2 import Environment, FileSystemLoader, Template
 
 
-def get_field(name : str, prompt : typing.Optional[str] = None) -> str:
-    if prompt is None:
-        prompt = f"{name}: "
-    return input(prompt)
+def get_field(
+        name : str,
+        prompt : typing.Optional[str] = None,
+        is_password : bool = False,
+        encrypt_password : bool = True
+) -> str:
+    while True:
+        if prompt is None:
+            prompt = f"{name}: "
+        if is_password:
+            password : str = getpass(prompt)
+            if password == getpass("Type that same password again: "):
+                if encrypt_password:
+                    password = crypt(password)
+                return password
+            else:
+                print("Passwords don’t match. Try again.")
+        else:
+            return input(prompt)
 
 
 def main():
